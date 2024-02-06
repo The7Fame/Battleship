@@ -5,7 +5,11 @@ import org.example.field.State;
 import org.example.player.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
+
+import static org.example.field.Constants.*;
 
 public class Game {
     private final Scanner input;
@@ -97,16 +101,24 @@ public class Game {
 
     private Field placeShips(Field field) {
         System.out.println(field.drawField(false));
-        while (field.getLiveCells() != 56) {
-            System.out.print("Put a ship on your board ");
-            addShipAgain(field);
-            System.out.println(field.drawField(false));
+        System.out.println("How do your want do set up ships?\n0 - manually\n1 - automatically");
+        String choice = this.input.nextLine();
+        if(choice.equals("0")){
+            System.out.println("Manually");
+            while (field.getLiveCells() != 56) {
+                System.out.print("Put a ship on your board ");
+                addShipAgain(field, false);
+                System.out.println(field.drawField(false));
+            }
+        } else if (choice.equals("1")) {
+            while (field.getLiveCells() != 56) {
+                addShipAgain(field, true);
+            }
         }
         return field;
     }
 
-    private String[] getCoords() {
-        String coords = this.input.nextLine();
+    private String[] parseCoords(String coords){
         String[] c = coords.split(" ");
         String[] coordinates = null;
         if(c.length == 3) {
@@ -147,11 +159,36 @@ public class Game {
         }
         return coordinates;
     }
-    private void addShipAgain(Field field) {
+    private String[] getCoords() {
+        String coords = this.input.nextLine();
+        return parseCoords(coords);
+    }
+
+    private String[] randomCoords(){
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        int indexChar = random.nextInt(CHARS.length);
+        char randomChar = CHARS[indexChar];
+        int indexRaw = random.nextInt(RAWS.length);
+        int randomRaw = RAWS[indexRaw];
+        int indexPosition = random.nextInt(POSITION.length);
+        char randomPosition = POSITION[indexPosition];
+        int indexShip = random.nextInt(SHIPS.length);
+        int randomShip = SHIPS[indexShip];
+        sb
+                    .append(randomChar)
+                    .append(randomRaw)
+                    .append(" ")
+                    .append(randomPosition)
+                    .append(" ")
+                    .append(randomShip);
+        return parseCoords(sb.toString());
+    }
+    private void addShipAgain(Field field, boolean auto) {
         boolean valid = false;
         while (!valid) {
             try {
-                field.addShip(getCoords());
+                field.addShip(auto ? randomCoords() : getCoords());
                 valid = true;
             } catch (Exception e) {
                 System.out.print("Wrong coordinates. Try it again: ");
