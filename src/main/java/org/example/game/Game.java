@@ -59,11 +59,17 @@ public class Game {
         this.player = new Player(this.input.nextLine());
         System.out.println("With whom do you want to play\n0 - human\n1 - computer");
         String choice = this.input.nextLine();
-        if(choice.equals("0")){
-            System.out.print("Name of the second player: ");
-            this.enemy = new Player(this.input.nextLine());
-        }else if(choice.equals("1")){
-            this.enemy = new Player();
+        switch (choice) {
+            case "0":
+                System.out.print("Name of the second player: ");
+                this.enemy = new Player(this.input.nextLine());
+                break;
+            case "1":
+                this.enemy = new Player();
+                break;
+            default:
+                System.out.println("Invalid choice. Please enter either 0 or 1.");
+                createPlayers();
         }
     }
 
@@ -75,9 +81,11 @@ public class Game {
         }
     }
     private void attack(Field myField, Field enemyField, boolean bot) {
-        System.out.print("        Your field\n"
+        System.out.print("        " +
+                "Your field\n"
                 + myField.drawField(false)
-                + "        Field to attack\n"
+                + "        " +
+                "Field to attack\n"
                 + enemyField.drawField(true)
         );
         switch (attackAgain(enemyField, bot)) {
@@ -185,7 +193,6 @@ public class Game {
         sb
                 .append(randomChar)
                 .append(randomRaw);
-        System.out.println(sb.toString());
         return parseCoords(sb.toString());
 
     }
