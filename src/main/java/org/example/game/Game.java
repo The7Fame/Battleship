@@ -5,7 +5,6 @@ import org.example.field.State;
 import org.example.player.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
