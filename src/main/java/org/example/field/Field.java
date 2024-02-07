@@ -53,8 +53,8 @@ public class Field {
         return liveCells;
     }
 
-    public State attack(String coordinates) {
-        int[][] numbers = parseData(coordinates);
+    public State attack(String[] coordinates) {
+        int[][] numbers = parseData(coordinates[0]);
 
         State currentState = this.cells[numbers[0][0]][numbers[0][1]].getStatus();
         State afterAttackState = this.cells[numbers[0][0]][numbers[0][1]].attack();
