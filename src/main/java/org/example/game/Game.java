@@ -17,6 +17,8 @@ public class Game {
     private Player enemy;
     private int turn;
 
+    private final ArrayList<String> randomShips = new ArrayList<>(); // ships which were generated
+    private final ArrayList<String> randomShipsToAttack = new ArrayList<>();
     public Game(Scanner input) {
         this.turn = 0;
         this.input = input;
@@ -164,7 +166,7 @@ public class Game {
         return parseCoords(coords);
     }
 
-    private String[] randomCoords(){
+    private String[] randomCoordsToSetUpShip(){
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
         int indexChar = random.nextInt(CHARS.length);
@@ -182,13 +184,18 @@ public class Game {
                     .append(randomPosition)
                     .append(" ")
                     .append(randomShip);
+
+        if (this.randomShips.contains(sb.toString())){
+            randomCoordsToSetUpShip();
+        }
+        this.randomShips.add(sb.toString());
         return parseCoords(sb.toString());
     }
     private void addShipAgain(Field field, boolean auto) {
         boolean valid = false;
         while (!valid) {
             try {
-                field.addShip(auto ? randomCoords() : getCoords());
+                field.addShip(auto ? randomCoordsToSetUpShip() : getCoords());
                 valid = true;
             } catch (Exception e) {
                 System.out.print("Wrong coordinates. Try it again: ");
