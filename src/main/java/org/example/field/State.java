@@ -1,8 +1,8 @@
 package org.example.field;
 
 public enum State {
-    EMPTY(" "),
-    SHIP(" ", "0"),
+    EMPTY("*"),
+    SHIP("*", "0"),
     HIT("X"),
     MISS("."),
     DEAD("X");
