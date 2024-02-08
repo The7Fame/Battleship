@@ -2,19 +2,25 @@ package org.example.field;
 
 import org.example.ship.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import static org.example.field.Constants.SIZE;
 import static org.example.field.State.*;
 
 public class Field {
 
-    private static final int SIZE = 16;
     private Point[][] cells;
-    private int liveCells;
+    private int livePoints;
+    private final ArrayList<String> randomShips = new ArrayList<>(); // ships which were generated
     private HashMap<Integer, Integer> ships;
     public Field() {
         initialize();
-        this.liveCells = 0;
+        this.livePoints = 0;
+    }
+
+    public ArrayList<String> getRandomShips() {
+        return randomShips;
     }
 
     private void initialize() {
@@ -31,11 +37,17 @@ public class Field {
         }
     }
 
-    public String drawField(boolean hide) {
+    public String[] drawField(boolean hide) {
+        String[] lines = new String[SIZE + 1];
         StringBuilder builder = new StringBuilder();
-        builder.append("  A B C D E F G H I J K L M N O P\n");
+        builder.append("  ");
+        for (int i = 0; i < SIZE; i++) {
+            builder.append((char) ('A' + i)).append(" ");
+        }
+        lines[0] = builder.toString();
+        builder.setLength(0);
         for (int x = 0; x < SIZE; x++) {
-            builder.append((x +1)).append(" ");
+            builder.append((x + 1)).append(" ");
             for (int y = 0; y < SIZE; y++) {
                 if (hide) {
                     builder.append(this.cells[x][y].getStatus().getPublicValue());
@@ -44,13 +56,14 @@ public class Field {
                 }
                 builder.append(" ");
             }
-            builder.append("\n");
+            lines[x + 1] = builder.append("|").toString();
+            builder.setLength(0);
         }
-        return builder.toString();
+        return lines;
     }
 
-    public int getLiveCells() {
-        return liveCells;
+    public int getLivePoints() {
+        return livePoints;
     }
 
     public State attack(String[] coordinates) {
@@ -59,7 +72,7 @@ public class Field {
         State currentState = this.cells[numbers[0][0]][numbers[0][1]].getStatus();
         State afterAttackState = this.cells[numbers[0][0]][numbers[0][1]].attack();
         if (currentState == SHIP && (afterAttackState == HIT || afterAttackState == DEAD)) {
-            this.liveCells--;
+            this.livePoints--;
         }
         return afterAttackState;
     }
@@ -102,7 +115,7 @@ public class Field {
             for (int[] number : numbers) {
                 this.cells[number[0]][number[1]] = new Point(ship);
             }
-            this.liveCells += ship.getSize();
+            this.livePoints += ship.getSize();
             this.ships.replace(ship.getSize(), this.ships.get(ship.getSize()) - 1);
         } else {
             System.out.println("Wrong coordinates");

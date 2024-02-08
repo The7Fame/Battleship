@@ -16,7 +16,6 @@ public class Game {
     private Player enemy;
     private int turn;
 
-    private final ArrayList<String> randomShips = new ArrayList<>(); // ships which were generated
     public Game(Scanner input) {
         this.turn = 0;
         this.input = input;
@@ -32,7 +31,7 @@ public class Game {
         System.out.println(enemy.getName() + ", your turn to set up ships");
         enemy.setField(placeShips(enemyField, enemy.isBot()));
 
-        while (playerField.getLiveCells() > 0 && enemyField.getLiveCells() > 0) {
+        while (playerField.getLivePoints() > 0 && enemyField.getLivePoints() > 0) {
             if (turn == 0) {
                 System.out.println(player.getName() + ", your turn to attack");
                 attack(playerField, enemyField, player.isBot());
@@ -74,20 +73,28 @@ public class Game {
     }
 
     private void winner() {
-        if (this.player.getField().getLiveCells() <= 0) {
+        clear();
+        System.out.printf("%-60s", "        Your field");
+        System.out.printf("%-60s\n", "        Enemy field");
+        if (this.player.getField().getLivePoints() <= 0) {
+            for (int i = 0; i < SIZE; i++) {
+                System.out.printf("%-60s%-60s%n", this.enemy.getField().drawField(false)[i], this.player.getField().drawField(false)[i]);
+            }
             System.out.print(this.enemy.getName() + ", your are the winner");
         } else {
-            System.out.print( this.player.getName() + ", your are the winner");
+            for (int i = 0; i < SIZE; i++) {
+                System.out.printf("%-60s%-60s%n", this.player.getField().drawField(false)[i], this.enemy.getField().drawField(false)[i]);
+            }
+            System.out.print(this.player.getName() + ", your are the winner");
         }
     }
     private void attack(Field myField, Field enemyField, boolean bot) {
-        System.out.print("        " +
-                "Your field\n"
-                + myField.drawField(false)
-                + "        " +
-                "Field to attack\n"
-                + enemyField.drawField(true)
-        );
+        clear();
+        System.out.printf("%-60s", "        Your field");
+        System.out.printf("%-60s\n", "        Enemy field");
+        for (int i = 0; i < SIZE; i++) {
+            System.out.printf("%-60s%-60s%n", myField.drawField(false)[i], enemyField.drawField(true)[i]);
+        }
         switch (attackAgain(enemyField, bot)) {
             case HIT -> {
                 System.out.println("Stricked");
@@ -103,6 +110,7 @@ public class Game {
     }
 
     private State attackAgain(Field field, boolean bot) {
+        clear();
         System.out.print("Coordinates for the attack: ");
         while (true) {
             try {
@@ -114,24 +122,29 @@ public class Game {
     }
 
     private Field placeShips(Field field, boolean bot) {
+        clear();
         if (!bot){
-            System.out.println(field.drawField(false));
+            for (int i = 0; i < SIZE; i++) {
+                System.out.println(field.drawField(false)[i]);
+            }
             System.out.println("How do your want do set up ships?\n0 - manually\n1 - automatically");
             String choice = this.input.nextLine();
             if(choice.equals("0")){
-                while (field.getLiveCells() != 56) {
+                while (field.getLivePoints() != 56) {
                     System.out.print("Put a ship on your board ");
                     addShipAgain(field, false);
-                    System.out.println(field.drawField(false));
+                    for (int i = 0; i < SIZE; i++) {
+                        System.out.println(field.drawField(false)[i]);
+                    }
                 }
             } else if (choice.equals("1")) {
-                while (field.getLiveCells() != 56) {
+                while (field.getLivePoints() != 56) {
                     addShipAgain(field, true);
                 }
             }
             return field;
         }
-        while (field.getLiveCells() != 56) {
+        while (field.getLivePoints() != 56) {
             addShipAgain(field, true);
         }
         return field;
@@ -196,7 +209,7 @@ public class Game {
         return parseCoords(sb.toString());
 
     }
-    private String[] randomCoordsToSetUpShip(){
+    private String[] randomCoordsToSetUpShip(Field field){
         String coords;
         Random random = new Random();
         do {
@@ -217,15 +230,15 @@ public class Game {
                     .append(" ")
                     .append(randomShip);
             coords = sb.toString();
-        }while (this.randomShips.contains(coords));
-        this.randomShips.add(coords);
+        }while (field.getRandomShips().contains(coords));
+        field.getRandomShips().add(coords);
         return parseCoords(coords);
     }
     private void addShipAgain(Field field, boolean auto) {
         boolean valid = false;
         while (!valid) {
             try {
-                field.addShip(auto ? randomCoordsToSetUpShip() : getCoords());
+                field.addShip(auto ? randomCoordsToSetUpShip(field) : getCoords());
                 valid = true;
             } catch (Exception e) {
                 System.out.print("Wrong coordinates. Try it again: ");
