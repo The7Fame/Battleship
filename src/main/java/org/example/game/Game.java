@@ -2,8 +2,10 @@ package org.example.game;
 
 import org.example.field.Field;
 import org.example.field.State;
+import org.example.file.FileGame;
 import org.example.player.Player;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -15,13 +17,15 @@ public class Game {
     private Player player;
     private Player enemy;
     private int turn;
+    private FileGame gameFile;
 
-    public Game(Scanner input) {
+    public Game(Scanner input, FileGame gameFile) {
         this.turn = 0;
         this.input = input;
+        this.gameFile = gameFile;
     }
 
-    public void play() {
+    public void play() throws IOException {
         createPlayers();
 
         Field playerField = new Field();
@@ -30,6 +34,7 @@ public class Game {
         player.setField(placeShips(playerField, player.isBot()));
         System.out.println(enemy.getName() + ", your turn to set up ships");
         enemy.setField(placeShips(enemyField, enemy.isBot()));
+        gameFile.gameStart();
         while (playerField.getLivePoints() > 0 && enemyField.getLivePoints() > 0) {
             if (turn == 0) {
                 System.out.println(player.getName() + ", your turn to attack");
@@ -71,7 +76,7 @@ public class Game {
         }
     }
 
-    private void winner() {
+    private void winner() throws IOException {
         clear();
         System.out.printf("%-60s", "        Your field");
         System.out.printf("%-60s\n", "        Enemy field");
@@ -79,11 +84,13 @@ public class Game {
             for (int i = 0; i < SIZE; i++) {
                 System.out.printf("%-60s%-60s%n", this.enemy.getField().drawField(false)[i], this.player.getField().drawField(false)[i]);
             }
+            gameFile.gameEnd(this.enemy.getName());
             System.out.print(this.enemy.getName() + ", your are the winner");
         } else {
             for (int i = 0; i < SIZE; i++) {
                 System.out.printf("%-60s%-60s%n", this.player.getField().drawField(false)[i], this.enemy.getField().drawField(false)[i]);
             }
+            gameFile.gameEnd(this.player.getName());
             System.out.print(this.player.getName() + ", your are the winner");
         }
     }

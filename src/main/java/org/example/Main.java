@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Scanner in = new Scanner(System.in);
         FileGame gameDocumenting = new FileGame(nameOfFile());
-        Game game = new Game(in);
+        Game game = new Game(in, gameDocumenting);
         game.msgWelcome();
         game.play();
     }

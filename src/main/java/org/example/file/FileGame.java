@@ -18,7 +18,17 @@ public class FileGame{
         }
     }
 
-    public FileWriter getWriter() {
-        return writer;
+    public void gameStart() throws IOException {
+        LocalDateTime dateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        String gameStartedAt = formatter.format(dateTime);
+        writer.write("Game started at " + gameStartedAt);
+        writer.flush();
+    }
+
+    public void gameEnd(String name) throws IOException {
+        writer.write(name.toUpperCase() + " won");
+        writer.close();
+
     }
 }
