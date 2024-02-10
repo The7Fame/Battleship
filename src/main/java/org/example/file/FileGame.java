@@ -1,6 +1,9 @@
 package org.example.file;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FileGame{
     private File file;
@@ -15,7 +18,7 @@ public class FileGame{
         }
     }
 
-    public FileWriter getWriter() throws IOException {
-        return this.writer; 
+    public FileWriter getWriter() {
+        return writer;
     }
 }
