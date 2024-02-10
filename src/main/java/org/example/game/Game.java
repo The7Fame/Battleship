@@ -30,7 +30,6 @@ public class Game {
         player.setField(placeShips(playerField, player.isBot()));
         System.out.println(enemy.getName() + ", your turn to set up ships");
         enemy.setField(placeShips(enemyField, enemy.isBot()));
-
         while (playerField.getLivePoints() > 0 && enemyField.getLivePoints() > 0) {
             if (turn == 0) {
                 System.out.println(player.getName() + ", your turn to attack");
@@ -48,7 +47,7 @@ public class Game {
                 """
                 Welcome to Battleship!
                 Coordinates input example (a1 h 5)
-                a1 - coordinate, h - position, 5 - size of the ship
+                a1 - coordinate\nh - position\n5 - size of the ship
                 """
         );
     }
@@ -88,7 +87,7 @@ public class Game {
             System.out.print(this.player.getName() + ", your are the winner");
         }
     }
-    private void attack(Field myField, Field enemyField, boolean bot) {
+    private void attack(Field myField, Field enemyField, boolean bot){
         clear();
         System.out.printf("%-60s", "        Your field");
         System.out.printf("%-60s\n", "        Enemy field");

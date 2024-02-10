@@ -10,7 +10,7 @@ import static org.example.field.State.*;
 
 public class Field {
 
-    private Point[][] cells;
+    private Point[][] points;
     private int livePoints;
     private final ArrayList<String> randomShips = new ArrayList<>(); // ships which were generated
     private HashMap<Integer, Integer> ships;
@@ -24,10 +24,10 @@ public class Field {
     }
 
     private void initialize() {
-        this.cells = new Point[SIZE][SIZE];
+        this.points = new Point[SIZE][SIZE];
         for (int x = 0; x < SIZE; x++) {
             for (int y = 0; y < SIZE; y++) {
-                cells[x][y] = new Point();
+                points[x][y] = new Point();
             }
         }
         this.ships = new HashMap<>();
@@ -50,9 +50,9 @@ public class Field {
             builder.append((x + 1)).append(" ");
             for (int y = 0; y < SIZE; y++) {
                 if (hide) {
-                    builder.append(this.cells[x][y].getStatus().getPublicValue());
+                    builder.append(this.points[x][y].getStatus().getPublicValue());
                 } else {
-                    builder.append(this.cells[x][y].getStatus().getPrivateValue());
+                    builder.append(this.points[x][y].getStatus().getPrivateValue());
                 }
                 builder.append(" ");
             }
@@ -67,10 +67,11 @@ public class Field {
     }
 
     public State attack(String[] coordinates) {
+
         int[][] numbers = parseData(coordinates[0]);
 
-        State currentState = this.cells[numbers[0][0]][numbers[0][1]].getStatus();
-        State afterAttackState = this.cells[numbers[0][0]][numbers[0][1]].attack();
+        State currentState = this.points[numbers[0][0]][numbers[0][1]].getStatus();
+        State afterAttackState = this.points[numbers[0][0]][numbers[0][1]].attack();
         if (currentState == SHIP && (afterAttackState == HIT || afterAttackState == DEAD)) {
             this.livePoints--;
         }
@@ -113,7 +114,7 @@ public class Field {
         int[][] numbers = parseData(coordinates);
         if (this.ships.get(ship.getSize()) != 0 && isFreeCells(numbers) && isValidPlace(numbers)) {
             for (int[] number : numbers) {
-                this.cells[number[0]][number[1]] = new Point(ship);
+                this.points[number[0]][number[1]] = new Point(ship);
             }
             this.livePoints += ship.getSize();
             this.ships.replace(ship.getSize(), this.ships.get(ship.getSize()) - 1);
@@ -155,7 +156,7 @@ public class Field {
         int eY = Math.min(coordinates[coordinates.length - 1][1] + 1, SIZE - 1);
         for (int x = sX; x <= eX; x++) {
             for (int y = sY; y <= eY; y++) {
-                if (this.cells[x][y].getStatus() != EMPTY) {
+                if (this.points[x][y].getStatus() != EMPTY) {
                     return false;
                 }
             }

@@ -1,5 +1,8 @@
 package org.example.field;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public final class Constants {
     public static final int SIZE = 16;
     public static final int[] RAWS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
@@ -10,5 +13,12 @@ public final class Constants {
     public static void clear(){
         System.out.print("\033[H\033[2J");
         System.out.flush();
+    }
+
+    public static String nameOfFile(){
+        LocalDateTime dateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd_MM_yyyy_HH_mm");
+        String formattedDateTime = formatter.format(dateTime);
+        return "game" + formattedDateTime + ".txt";
     }
 }
