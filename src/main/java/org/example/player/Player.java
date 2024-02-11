@@ -2,7 +2,6 @@ package org.example.player;
 
 import org.example.field.Field;
 
-
 public class Player {
 
     private final String name;

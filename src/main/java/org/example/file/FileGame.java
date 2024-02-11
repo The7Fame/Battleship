@@ -22,13 +22,12 @@ public class FileGame{
         LocalDateTime dateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         String gameStartedAt = formatter.format(dateTime);
-        writer.write("Game started at " + gameStartedAt);
+        writer.write("Game started at " + gameStartedAt +"\n");
         writer.flush();
     }
 
     public void gameEnd(String name) throws IOException {
         writer.write(name.toUpperCase() + " won");
         writer.close();
-
     }
 }

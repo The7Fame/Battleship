@@ -2,9 +2,9 @@ package org.example.field;
 
 import org.example.ship.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
+import static org.example.field.Constants.POSITION;
 import static org.example.field.Constants.SIZE;
 import static org.example.field.State.*;
 
@@ -12,15 +12,10 @@ public class Field {
 
     private Point[][] points;
     private int livePoints;
-    private final ArrayList<String> randomShips = new ArrayList<>(); // ships which were generated
     private HashMap<Integer, Integer> ships;
     public Field() {
         initialize();
         this.livePoints = 0;
-    }
-
-    public ArrayList<String> getRandomShips() {
-        return randomShips;
     }
 
     private void initialize() {
@@ -32,8 +27,8 @@ public class Field {
         }
         this.ships = new HashMap<>();
         for(int i = 1; i < 7; i++){
-            int ship_count = 7 - i;
-            ships.put(i, ship_count);
+            int shipCount = 7 - i;
+            ships.put(i, shipCount);
         }
     }
 
@@ -104,13 +99,8 @@ public class Field {
         return ship;
     }
 
-    public HashMap<Integer, Integer> getShips() {
-        return ships;
-    }
-
     public void addShip(String... coordinates) {
         Ship ship = choiceOfShip(coordinates.length);
-
         int[][] numbers = parseData(coordinates);
         if (this.ships.get(ship.getSize()) != 0 && isFreeCells(numbers) && isValidPlace(numbers)) {
             for (int[] number : numbers) {
@@ -119,7 +109,7 @@ public class Field {
             this.livePoints += ship.getSize();
             this.ships.replace(ship.getSize(), this.ships.get(ship.getSize()) - 1);
         } else {
-            System.out.println("Wrong coordinates");
+            return;
         }
     }
 
@@ -128,9 +118,6 @@ public class Field {
         for (int i = 0; i < coordinates.length; i++) {
             positions[i][0] = Integer.parseInt(coordinates[i].substring(1)) - 1;
             positions[i][1] = coordinates[i].charAt(0) - 97;
-            if (positions[i][0] < 0 || positions[i][0] > 15 || positions[i][1] < 0 || positions[i][1] > 15) {
-                System.out.println("Wrong coordinates");
-            }
         }
         return positions;
     }
@@ -162,5 +149,37 @@ public class Field {
             }
         }
         return true;
+    }
+
+    public void setShipsAutomatically(){
+        Random random = new Random();
+        for(int size = 6; size >= 1; size--){
+            while (ships.get(size) != 0){
+                String[] coordinates = new String[size];
+                int x = random.nextInt(16);
+                int y = random.nextInt(16);
+                int indexPosition = random.nextInt(POSITION.length);
+                char randomPosition = POSITION[indexPosition];
+                for (int i = 0; i < size; i++){
+                    switch (randomPosition){
+                        case 'v':
+                            coordinates[i] = (char) ('a' + y) + "" + (x + i + 1);
+                            break;
+                        case 'h':
+                            coordinates[i] = (char) ('a' + y + i) + "" + (x + 1);
+                            break;
+                    }
+                }
+                boolean valid = false;
+                while (!valid) {
+                    try {
+                        addShip(coordinates);
+                        valid = true;
+                    } catch (Exception e) {
+                        valid=true;
+                    }
+                }
+            }
+        }
     }
 }
