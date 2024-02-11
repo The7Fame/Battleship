@@ -95,7 +95,7 @@ public class Game {
     }
 
     private void attack(Field myField, Field enemyField, boolean bot){
-        clear();
+
         System.out.printf("%-60s", "        Your field");
         System.out.printf("%-60s\n", "        Enemy field");
         for (int i = 0; i < SIZE; i++) {
@@ -103,12 +103,15 @@ public class Game {
         }
         switch (attackAgain(enemyField, bot)) {
             case HIT -> {
+                clear();
                 System.out.println("Stricked");
             }
             case DEAD -> {
+                clear();
                 System.out.println("Destroyed");
             }
             default -> {
+                clear();
                 System.out.println("Miss");
                 this.turn = (this.turn + 1) % 2;
             }
@@ -201,15 +204,10 @@ public class Game {
 
     private String[] randomCoordsToAttack(){
         Random random = new Random();
-        StringBuilder sb = new StringBuilder();
-        int indexChar = random.nextInt(CHARS.length);
-        char randomChar = CHARS[indexChar];
-        int indexRaw = random.nextInt(RAWS.length);
-        int randomRaw = RAWS[indexRaw];
-        sb
-                .append(randomChar)
-                .append(randomRaw);
-        return parseCoords(sb.toString());
+        int x = random.nextInt(16);
+        int y = random.nextInt(16);
+        String coordinate = (char) ('a' + y) + "" + x;
+        return parseCoords(coordinate);
 
     }
 
