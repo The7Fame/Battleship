@@ -95,11 +95,12 @@ public class Game {
     }
 
     private void attack(Field myField, Field enemyField, boolean bot){
-
-        System.out.printf("%-60s", "        Your field");
-        System.out.printf("%-60s\n", "        Enemy field");
-        for (int i = 0; i < SIZE; i++) {
-            System.out.printf("%-60s%-60s%n", myField.drawField(false)[i], enemyField.drawField(true)[i]);
+        if(!bot) {
+            System.out.printf("%-60s", "        Your field");
+            System.out.printf("%-60s\n", "        Enemy field");
+            for (int i = 0; i < SIZE; i++) {
+                System.out.printf("%-60s%-60s%n", myField.drawField(false)[i], enemyField.drawField(true)[i]);
+            }
         }
         switch (attackAgain(enemyField, bot)) {
             case HIT -> {
@@ -145,13 +146,18 @@ public class Game {
                         System.out.println(field.drawField(false)[i]);
                     }
                 }
+                System.out.println(field.getLivePoints());
             } else if (choice.equals("1")) {
-                field.setShipsAutomatically();
+                while (field.getLivePoints() != 56){
+                    field.setShipsAutomatically();
+                }
 
             }
             return field;
         }
-        field.setShipsAutomatically();
+        while (field.getLivePoints() != 56){
+            field.setShipsAutomatically();
+        }
         return field;
     }
 
