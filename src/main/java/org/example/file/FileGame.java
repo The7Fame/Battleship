@@ -30,4 +30,9 @@ public class FileGame{
         writer.write(name.toUpperCase() + " won");
         writer.close();
     }
+
+    public void writeMessage(String string) throws IOException {
+        writer.write(string);
+        writer.flush();
+    }
 }

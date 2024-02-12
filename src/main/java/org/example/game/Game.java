@@ -36,11 +36,14 @@ public class Game {
         enemy.setField(placeShips(enemyField, enemy.isBot()));
         gameFile.gameStart();
         while (playerField.getLivePoints() > 0 && enemyField.getLivePoints() > 0) {
+            clear();
             if (turn == 0) {
                 System.out.println(player.getName() + ", your turn to attack");
+                gameFile.writeMessage(player.getName().toUpperCase() + " attack enemy field: ");
                 attack(playerField, enemyField, player.isBot());
             } else {
                 System.out.println(enemy.getName() + ", your turn to attack");
+                gameFile.writeMessage(enemy.getName().toUpperCase() + " attack enemy field: ");
                 attack(enemyField, playerField, enemy.isBot());
             }
         }
@@ -77,16 +80,19 @@ public class Game {
     }
 
     private void winner() throws IOException {
+        gameFile.writeMessage("     Your field     " + " ".repeat(20) + "     Enemy field     " + "\n");
         System.out.printf("%-60s", "        Your field");
         System.out.printf("%-60s\n", "        Enemy field");
         if (this.player.getField().getLivePoints() <= 0) {
             for (int i = 0; i < SIZE; i++) {
+                gameFile.writeMessage(this.enemy.getField().drawField(false)[i] + " ".repeat(5) + this.player.getField().drawField(false)[i]+ "\n");
                 System.out.printf("%-60s%-60s%n", this.enemy.getField().drawField(false)[i], this.player.getField().drawField(false)[i]);
             }
             gameFile.gameEnd(this.enemy.getName());
             System.out.print(this.enemy.getName() + ", your are the winner");
         } else {
             for (int i = 0; i < SIZE; i++) {
+                gameFile.writeMessage(this.player.getField().drawField(false)[i] + " ".repeat(5) + this.enemy.getField().drawField(false)[i] + "\n");
                 System.out.printf("%-60s%-60s%n", this.player.getField().drawField(false)[i], this.enemy.getField().drawField(false)[i]);
             }
             gameFile.gameEnd(this.player.getName());
@@ -94,7 +100,7 @@ public class Game {
         }
     }
 
-    private void attack(Field myField, Field enemyField, boolean bot){
+    private void attack(Field myField, Field enemyField, boolean bot) throws IOException {
         if(!bot) {
             System.out.printf("%-60s", "        Your field");
             System.out.printf("%-60s\n", "        Enemy field");
@@ -106,15 +112,18 @@ public class Game {
             case HIT -> {
                 clear();
                 System.out.println("Stricked");
+                gameFile.writeMessage("Stricked\n");
             }
             case DEAD -> {
                 clear();
                 System.out.println("Destroyed");
+                gameFile.writeMessage("Destroyed\n");
             }
             default -> {
                 clear();
                 System.out.println("Miss");
                 this.turn = (this.turn + 1) % 2;
+                gameFile.writeMessage("Miss\n");
             }
         }
     }
@@ -161,7 +170,7 @@ public class Game {
         return field;
     }
 
-    private String[] parseCoords(String coords){
+    private String[] parseCoords(String coords) throws IOException {
         String[] c = coords.split(" ");
         String[] coordinates = null;
         if(c.length == 3) {
@@ -195,6 +204,7 @@ public class Game {
                 }
             }
         } else if (c.length == 1) {
+            gameFile.writeMessage(coords + " - ");
             coordinates = new String[1];
             for (int i = 0; i < 1; i++) {
                 coordinates[i] = c[i];
@@ -203,12 +213,12 @@ public class Game {
         return coordinates;
     }
 
-    private String[] getCoords() {
+    private String[] getCoords() throws IOException {
         String coords = this.input.nextLine();
         return parseCoords(coords);
     }
 
-    private String[] randomCoordsToAttack(){
+    private String[] randomCoordsToAttack() throws IOException {
         Random random = new Random();
         int x = random.nextInt(16);
         int y = random.nextInt(16);
