@@ -10,7 +10,9 @@ public class FileGame{
     private FileWriter writer;
 
     public FileGame(String fileName){
-        this.file= new File(fileName); 
+        File gamesFolder = new File(System.getProperty("user.dir") + File.separator + "games");
+        gamesFolder.mkdir();
+        this.file= new File(gamesFolder, fileName);
         try {
             this.writer = new FileWriter(file);
         } catch (IOException e) {

@@ -3,6 +3,7 @@ package org.example.game;
 import org.example.field.Field;
 import org.example.field.State;
 import org.example.file.FileGame;
+import org.example.player.AdminMode;
 import org.example.player.Player;
 
 import java.io.IOException;
@@ -27,27 +28,30 @@ public class Game {
 
     public void play() throws IOException {
         createPlayers();
-
-        Field playerField = new Field();
-        Field enemyField = new Field();
-        System.out.println(player.getName() + ", your turn to set up ships");
-        player.setField(placeShips(playerField, player.isBot()));
-        System.out.println(enemy.getName() + ", your turn to set up ships");
-        enemy.setField(placeShips(enemyField, enemy.isBot()));
-        gameFile.gameStart();
-        while (playerField.getLivePoints() > 0 && enemyField.getLivePoints() > 0) {
-            clear();
-            if (turn == 0) {
-                System.out.println(player.getName() + ", your turn to attack");
-                gameFile.writeMessage(player.getName().toUpperCase() + " attack enemy field: ");
-                attack(playerField, enemyField, player.isBot());
-            } else {
-                System.out.println(enemy.getName() + ", your turn to attack");
-                gameFile.writeMessage(enemy.getName().toUpperCase() + " attack enemy field: ");
-                attack(enemyField, playerField, enemy.isBot());
+        if(player.getName().equalsIgnoreCase("admin")){
+            new AdminMode(this.input).admin();
+        }else  {
+            Field playerField = new Field();
+            Field enemyField = new Field();
+            System.out.println(player.getName() + ", your turn to set up ships");
+            player.setField(placeShips(playerField, player.isBot()));
+            System.out.println(enemy.getName() + ", your turn to set up ships");
+            enemy.setField(placeShips(enemyField, enemy.isBot()));
+            gameFile.gameStart();
+            while (playerField.getLivePoints() > 0 && enemyField.getLivePoints() > 0) {
+                clear();
+                if (turn == 0) {
+                    System.out.println(player.getName() + ", your turn to attack");
+                    gameFile.writeMessage(player.getName().toUpperCase() + " attack enemy field: ");
+                    attack(playerField, enemyField, player.isBot());
+                } else {
+                    System.out.println(enemy.getName() + ", your turn to attack");
+                    gameFile.writeMessage(enemy.getName().toUpperCase() + " attack enemy field: ");
+                    attack(enemyField, playerField, enemy.isBot());
+                }
             }
+            winner();
         }
-        winner();
     }
 
     public void msgWelcome() {
@@ -55,27 +59,34 @@ public class Game {
                 """
                 Welcome to Battleship!
                 Coordinates input example (a1 h 5)
-                a1 - coordinate\nh - position\n5 - size of the ship
+                a1 - coordinate
+                h - position
+                5 - size of the ship
                 """
         );
     }
 
     private void createPlayers() {
         System.out.print("Name of the first player: ");
-        this.player = new Player(this.input.nextLine());
-        System.out.println("With whom do you want to play\n0 - human\n1 - computer");
-        String choice = this.input.nextLine();
-        switch (choice) {
-            case "0":
-                System.out.print("Name of the second player: ");
-                this.enemy = new Player(this.input.nextLine());
-                break;
-            case "1":
-                this.enemy = new Player();
-                break;
-            default:
-                System.out.println("Invalid choice. Please enter either 0 or 1.");
-                createPlayers();
+        String name = this.input.nextLine();
+        if(name.equalsIgnoreCase("admin")){
+            this.player = new Player(name);
+        }else{
+            this.player = new Player(this.input.nextLine());
+            System.out.println("With whom do you want to play\n0 - human\n1 - computer");
+            String choice = this.input.nextLine();
+            switch (choice) {
+                case "0":
+                    System.out.print("Name of the second player: ");
+                    this.enemy = new Player(this.input.nextLine());
+                    break;
+                case "1":
+                    this.enemy = new Player();
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter either 0 or 1.");
+                    createPlayers();
+            }
         }
     }
 
@@ -108,7 +119,7 @@ public class Game {
                 System.out.printf("%-60s%-60s%n", myField.drawField(false)[i], enemyField.drawField(true)[i]);
             }
         }
-        switch (attackAgain(enemyField, bot)) {
+        switch (attackShips(enemyField, bot)) {
             case HIT -> {
                 clear();
                 System.out.println("Stricked");
@@ -128,7 +139,7 @@ public class Game {
         }
     }
 
-    private State attackAgain(Field field, boolean bot) {
+    private State attackShips(Field field, boolean bot) {
         System.out.print("Coordinates for the attack: ");
         while (true) {
             try {
@@ -150,7 +161,7 @@ public class Game {
             if(choice.equals("0")){
                 while (field.getLivePoints() != 56) {
                     System.out.print("Put a ship on your board ");
-                    addShipAgain(field);
+                    addShips(field);
                     for (int i = 0; i < SIZE; i++) {
                         System.out.println(field.drawField(false)[i]);
                     }
@@ -227,7 +238,7 @@ public class Game {
 
     }
 
-    private void addShipAgain(Field field) {
+    private void addShips(Field field) {
         boolean valid = false;
         while (!valid) {
             try {
