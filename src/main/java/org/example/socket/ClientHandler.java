@@ -1,7 +1,13 @@
 package org.example.socket;
 
+import org.example.file.FileGame;
+import org.example.game.Game;
+
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
+
+import static org.example.field.Constants.nameOfFile;
 
 public class ClientHandler extends Thread {
 
@@ -41,6 +47,7 @@ public class ClientHandler extends Thread {
                 sendMessage("Waiting for the connection another player...");
             }
             server.broadcast(name + " connected to the server");
+            server.setActiveClient(this);
 
             if (server.getParticipantCount() == 2) {
                 server.broadcast("The game has started");
@@ -50,8 +57,14 @@ public class ClientHandler extends Thread {
                 if (message == null) {
                     break;
                 }
-                System.out.println(name + ": " + message);
-                server.broadcast(name + ": " + message);
+                if (isActive()) {
+                    System.out.println(name + ": " + message);
+                    server.broadcast(name + ": " + message);
+                    startGame();
+                    switchActiveClient();
+                } else {
+                    sendMessage("not your turn");
+                }
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -73,6 +86,21 @@ public class ClientHandler extends Thread {
             server.removeClient(this);
             server.broadcast(name + " left the server");
         }
+    }
+
+    public boolean isActive() {
+        return this == server.getActiveClient();
+    }
+
+    public void switchActiveClient() {
+        int index = server.clients.indexOf(this);
+        index = (index + 1) % server.clients.size();
+        server.setActiveClient(server.clients.get(index));
+    }
+
+    public void startGame() throws IOException {
+        FileGame gameDocumenting = new FileGame(nameOfFile());
+        new Game(new Scanner(System.in), gameDocumenting).play();
     }
 }
 

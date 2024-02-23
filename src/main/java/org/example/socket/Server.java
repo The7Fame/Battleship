@@ -1,14 +1,21 @@
 package org.example.socket;
 
+import org.example.file.FileGame;
+import org.example.game.Game;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import static org.example.field.Constants.nameOfFile;
+
 public class Server {
 
-    public static final int PORT = 8000;
-    private List<ClientHandler> clients;
+    public static final int PORT = 8080;
+    protected List<ClientHandler> clients;
     private ServerSocket serverSocket;
+    private ClientHandler activeClient;
+
     public Server() {
         try {
             serverSocket = new ServerSocket(PORT);
@@ -49,5 +56,18 @@ public class Server {
     }
     public void removeClient(ClientHandler client) {
         clients.remove(client);
+    }
+
+    public void setActiveClient(ClientHandler client) {
+        activeClient = client;
+    }
+
+    public ClientHandler getActiveClient() {
+        return activeClient;
+    }
+
+
+    public static void main(String[] args) {
+        new Server();
     }
 }
