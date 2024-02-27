@@ -1,67 +1,58 @@
 package org.example.socket;
 
-import java.io.*;
-import java.net.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.Scanner;
 
 public class Client {
-    public static final String HOST = "127.0.0.1";
-    public static final int PORT = 8000;
-    private Socket socket;
+    public void connect() throws IOException{
+        Socket socket = new Socket("localhost", 5000);
+        System.out.println("Connected to the server");
 
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
-    private String name;
-    public Client(String name) {
-        this.name = name;
-
-        try {
-            socket = new Socket(HOST, PORT);
-            System.out.println("Connected to the server: " + socket);
-            out = new ObjectOutputStream(socket.getOutputStream());
-            in = new ObjectInputStream(socket.getInputStream());
-            out.writeObject(name);
-            out.flush();
-            String message = (String) in.readObject();
-            System.out.println(message);
-
-            new Thread(new ServerHandler()).start();
-
-            BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
-            while (true) {
-                message = keyboard.readLine();
-                out.writeObject(message);
-                out.flush();
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        Thread reader = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    while (!socket.isClosed()){
+                        String line = in.readLine();
+                        if(line != null){
+                            System.out.println(line);
+                        }else {
+                            throw new SocketException();
+                        }
+                    }
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
             }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
+        });
+        reader.start();
+
+        Thread writer = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Scanner scanner = new Scanner(System.in);
+                    while (!socket.isClosed()){
+                        String line = scanner.nextLine();
+                        out.println(line);
+                    }
+                    scanner.close();
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-                if (out != null) {
-                    out.close();
-                }
-                if (socket != null) {
-                    socket.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-        }
+        });
+        writer.start();
     }
 
-    private class ServerHandler implements Runnable {
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    String message = (String) in.readObject();
-                    System.out.println(message);
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
+
+    public static void main(String[] args) throws IOException {
+        new Client().connect();
     }
 }
