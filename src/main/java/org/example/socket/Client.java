@@ -50,9 +50,4 @@ public class Client {
         });
         writer.start();
     }
-
-
-    public static void main(String[] args) throws IOException {
-        new Client().connect();
-    }
 }
