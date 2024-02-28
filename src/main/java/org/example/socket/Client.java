@@ -13,7 +13,7 @@ public class Client {
     public void connect() throws IOException{
         Socket socket = new Socket("localhost", 5000);
         System.out.println("Connected to the server");
-
+        System.out.println("Put your name: ");
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         Thread reader = new Thread(new Runnable() {

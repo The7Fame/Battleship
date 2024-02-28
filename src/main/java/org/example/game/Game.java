@@ -73,7 +73,7 @@ public class Game implements Runnable{
                 broadcast("It's player "+ player.getName() + "'s turn");
                 player.getOut().println("Enter the coordinates");
                 String input = player.getIn().readLine();
-                if(input != null){
+                if(isValidCoords(input)){
                     switch (player.getEnemy().getField().attack(parseCoords(input))) {
                         case HIT -> {
                             clear();
@@ -94,7 +94,11 @@ public class Game implements Runnable{
                         }
                     }
                 }else {
-                    throw new SocketException();
+                    clear();
+                    broadcast("Wrong coordinates");
+                    sendField(player);
+                    turn = (turn + 1) % 2;
+                    gameFile.writeMessage("Wrong coordinates\n");
                 }
             }
             if (players.get(0).getField().getLivePoints() <= 0){

@@ -9,17 +9,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Server {
     public void start() throws IOException {
         ServerSocket server = new ServerSocket(5000);
-        System.out.println("Server listening on port 5000\n You need to launch game again to connect to the server\nRemember, that all ships will be setting up automatically");
+        System.out.println("Server listening on port 5000\nYou need to launch game again to connect to the server\nRemember, that all ships will be setting up automatically");
         List<Player> players = new ArrayList<>();
         
         while (true){
             Socket socket = server.accept();
             System.out.println("Connected " + socket.getRemoteSocketAddress());
-            Player player = new Player("NetworkPLAYER", socket);
+            Scanner scanner = new Scanner(socket.getInputStream());
+            Player player = new Player(scanner.nextLine(), socket);
             player.setField(putShipsAutomatically());
             players.add(player);
             if(players.size() == 2){

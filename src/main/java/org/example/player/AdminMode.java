@@ -75,19 +75,18 @@ public class AdminMode {
         boolean exit = false;
         while (!exit) {
             showMenu();
-            int choice = sc.nextInt();
-            sc.nextLine();
+            String choice = sc.nextLine();
             switch (choice) {
-                case 1:
+                case "1":
                     numberOfGames();
                     break;
-                case 2:
+                case "2":
                     gameToRead();
                     break;
-                case 3:
+                case "3":
                     deleteGame();
                     break;
-                case 4:
+                case "4":
                     exit = true;
                     System.out.println("Thank you for using the admin mode. Goodbye.");
                     break;

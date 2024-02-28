@@ -32,4 +32,27 @@ public final class Constants {
         String formattedDateTime = formatter.format(dateTime);
         return "game" + formattedDateTime + ".txt";
     }
+
+    public static boolean isValidCoords(String in) {
+        if (in.length() !=2 && in.length() != 3) {
+            return false;
+        }
+
+        char firstChar = in.toUpperCase().charAt(0);
+        System.out.println(firstChar);
+        if (firstChar < 'A' || firstChar > 'P') {
+            return false;
+        }
+
+        try {
+            int secondChar = Integer.parseInt(in.substring(1));
+            if (secondChar < 1 || secondChar > 16) {
+                return false;
+            }
+        }catch (Exception e){
+            return false;
+        }
+
+        return true;
+    }
 }
