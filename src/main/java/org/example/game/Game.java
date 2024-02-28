@@ -66,6 +66,7 @@ public class Game implements Runnable{
         try
         {
             broadcast("The game has started");
+            gameFile.writeMessage("The game has started\n");
             while (players.get(0).getField().getLivePoints() > 0 && players.get(1).getField().getLivePoints() > 0)
             {
                 Player player = players.get(turn);
@@ -103,8 +104,18 @@ public class Game implements Runnable{
             }
             if (players.get(0).getField().getLivePoints() <= 0){
                 broadcast(players.get(1).getName() + " has won");
+                gameFile.gameEnd(players.get(1).getName());
+                gameFile.writeMessage("     Your field     " + " ".repeat(20) + "     Enemy field     " + "\n");
+                for (int i = 0; i < SIZE + 1; i++) {
+                    gameFile.writeMessage(players.get(1).getField().drawField(false)[i] + " ".repeat(5) + players.get(1).getEnemy().getField().drawField(false)[i]+ "\n");
+                }
             }else {
                 broadcast(players.get(0).getName() + " has won");
+                gameFile.gameEnd(players.get(0).getName());
+                gameFile.writeMessage("     Your field     " + " ".repeat(20) + "     Enemy field     " + "\n");
+                for (int i = 0; i < SIZE + 1; i++) {
+                    gameFile.writeMessage(players.get(0).getField().drawField(false)[i] + " ".repeat(5) + players.get(0).getEnemy().getField().drawField(false)[i]+ "\n");
+                }
             }
             for(Player player : players){
                 player.close();
@@ -157,14 +168,14 @@ public class Game implements Runnable{
         System.out.printf("%-60s", "        Your field");
         System.out.printf("%-60s\n", "        Enemy field");
         if (this.player.getField().getLivePoints() <= 0) {
-            for (int i = 0; i < SIZE; i++) {
+            for (int i = 0; i < SIZE + 1; i++) {
                 gameFile.writeMessage(this.enemy.getField().drawField(false)[i] + " ".repeat(5) + this.player.getField().drawField(false)[i]+ "\n");
                 System.out.printf("%-60s%-60s%n", this.enemy.getField().drawField(false)[i], this.player.getField().drawField(false)[i]);
             }
             gameFile.gameEnd(this.enemy.getName());
             System.out.print(this.enemy.getName() + ", your are the winner");
         } else {
-            for (int i = 0; i < SIZE; i++) {
+            for (int i = 0; i < SIZE + 1; i++) {
                 gameFile.writeMessage(this.player.getField().drawField(false)[i] + " ".repeat(5) + this.enemy.getField().drawField(false)[i] + "\n");
                 System.out.printf("%-60s%-60s%n", this.player.getField().drawField(false)[i], this.enemy.getField().drawField(false)[i]);
             }
@@ -224,7 +235,7 @@ public class Game implements Runnable{
                 while (field.getLivePoints() != 56) {
                     System.out.print("Put a ship on your board ");
                     addShips(field);
-                    for (int i = 0; i < SIZE; i++) {
+                    for (int i = 0; i < SIZE + 1; i++) {
                         System.out.println(field.drawField(false)[i]);
                     }
                 }
